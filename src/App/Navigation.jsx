@@ -3,10 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
-import Drawer from '@material-ui/core/Drawer';
-import Hidden from '@material-ui/core/Hidden';
-import { IconButton, Button } from '@material-ui/core';
+import { AppBar, Drawer, Hidden, IconButton, Button, List, ListItem, ListItemIcon, Divider, Toolbar, Tooltip, Typography } from '@material-ui/core';
 import MovieIcon from '@material-ui/icons/MovieOutlined';
 import PermMediaIcon from '@material-ui/icons/PermMediaOutlined';
 import AssignmentIcon from '@material-ui/icons/AssignmentOutlined';
@@ -15,11 +12,9 @@ import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import AccountCircleIcon from '@material-ui/icons/AccountCircleOutlined';
 import TheatersIcon from '@material-ui/icons/TheatersOutlined';
 import MenuIcon from '@material-ui/icons/Menu';
-import { List, ListItem, ListItemIcon, Divider } from '@material-ui/core';
+
 
 import { PhotoAlbumOutlined } from '@material-ui/icons';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import Logo from '../Assets/logo.png'
@@ -65,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(3),
     },
     logo: {
-        boxShadow:'none',
+        boxShadow: 'none',
         backgroundColor: 'inherit',
         color: 'white',
         borderRadius: 0,
@@ -99,45 +94,54 @@ const Navigation = (props) => {
 
     const drawer = (
         <div>
-            <div className={classes.toolbar} />
-
-            <Button variant='contained' component={Link} to="/" className={classes.logo}>
-                <img src={Logo} style={{ marginLeft: '-8px' }} />
-            </Button>
+            {/* <div className={classes.toolbar} /> */}
+            <Tooltip title="Scena.Studio">
+                <Button variant='contained' component={Link} to="/" className={classes.logo}>
+                    <img src={Logo} style={{ marginLeft: '-8px' }} />
+                </Button>
+            </Tooltip>
             <List>
+                {user && user.permissions.includes("canViewProduction") && production &&
+                    <Tooltip title="Production">
+                        <ListItem button key='Production' component={Link} to="/production" selected={props.route == 'production'}>
+                            <ListItemIcon><MovieIcon className={classes.icon} /></ListItemIcon>
+                        </ListItem>
+                    </Tooltip>
+                }
                 {user && user.permissions.includes("canViewScenes") && production &&
-                    <ListItem button key='Scenes' component={Link} to="/scenes" selected={props.route == 'scenes'}>
-                        <ListItemIcon><PermMediaIcon className={classes.icon} /></ListItemIcon>
-                    </ListItem>
+                    <Tooltip title="Scenes">
+                        <ListItem button key='Scenes' component={Link} to="/scenes" selected={props.route == 'scenes'}>
+                            <ListItemIcon><PermMediaIcon className={classes.icon} /></ListItemIcon>
+                        </ListItem>
+                    </Tooltip>
                 }
                 {user && user.permissions.includes("canViewScripts") && production &&
-                    <ListItem button key='Scripts' component={Link} to="/scripts" selected={props.route == 'scripts'}>
-                        <ListItemIcon><AssignmentIcon className={classes.icon} /></ListItemIcon>
-                    </ListItem>
-                }
-                {user && user.permissions.includes("canViewProduction") && production &&
-                    <ListItem button key='Production' component={Link} to="/production" selected={props.route == 'production'}>
-                        <ListItemIcon><MovieIcon className={classes.icon} /></ListItemIcon>
-                    </ListItem>
+                    <Tooltip title="Scripts">
+                        <ListItem button key='Scripts' component={Link} to="/scripts" selected={props.route == 'scripts'}>
+                            <ListItemIcon><AssignmentIcon className={classes.icon} /></ListItemIcon>
+                        </ListItem>
+                    </Tooltip>
                 }
                 {user && user.permissions.includes("canViewTeam") && production &&
-                    <ListItem button key='Team' component={Link} to="/team" selected={props.route == 'team'}>
-                        <ListItemIcon><GroupIcon className={classes.icon} /></ListItemIcon>
-                    </ListItem>
+                    <Tooltip title="Team">
+                        <ListItem button key='Team' component={Link} to="/team" selected={props.route == 'team'}>
+                            <ListItemIcon><GroupIcon className={classes.icon} /></ListItemIcon>
+                        </ListItem>
+                    </Tooltip>
                 }
-                
-                {/* <ListItem button key='Settings' component={Link} to="/settings" selected={props.route == 'settings'}>
-                    <ListItemIcon><SettingsIcon className={classes.icon} /></ListItemIcon>
-                </ListItem> */}
                 <Divider />
                 {user && user.permissions.includes("canViewCompany") &&
-                    <ListItem button key='Company' component={Link} to="/company" selected={props.route == 'company'}>
-                        <ListItemIcon><TheatersIcon className={classes.icon} /></ListItemIcon>
-                    </ListItem>
+                    <Tooltip title="Production Company">
+                        <ListItem button key='Company' component={Link} to="/company" selected={props.route == 'company'}>
+                            <ListItemIcon><TheatersIcon className={classes.icon} /></ListItemIcon>
+                        </ListItem>
+                    </Tooltip>
                 }
-                <ListItem button key='Account' component={Link} to="/account" selected={props.route == 'account'}>
-                    <ListItemIcon><AccountCircleIcon className={classes.icon} /></ListItemIcon>
-                </ListItem>
+                <Tooltip title="Account">
+                    <ListItem button key='Account' component={Link} to="/account" selected={props.route == 'account'}>
+                        <ListItemIcon><AccountCircleIcon className={classes.icon} /></ListItemIcon>
+                    </ListItem>
+                </Tooltip>
             </List>
         </div>
     );
