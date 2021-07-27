@@ -85,9 +85,9 @@ function App(props) {
     };
 
 
-    // const { window } = props;
-    // const classes = useStyles();
-    // const theme = useTheme();
+    const { window } = props;
+    const classes = useStyles();
+    const theme = useTheme();
 
     useEffect(() => {
         history.listen((location, action) => {
@@ -98,7 +98,7 @@ function App(props) {
 
     return (
         <Router history={history}>
-            <Snackbar open={alert && alert.message !== undefined} autoHideDuration={3000} onClose={handleClose}>
+            <Snackbar open={alert && alert.message !== undefined} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity={alert.type && alert.type.replace('alert-','')}>
                     {alert.message}
                 </Alert>

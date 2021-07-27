@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Button, IconButton, Typography, TextField, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { Box, Button, IconButton, Card, CardContent, CardActions, Typography, TextField, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DeleteIcon from '@material-ui/icons/DeleteOutlined';
-import MovieIcon from '@material-ui/icons/MovieOutlined';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { Navigation } from '../../App/Navigation';
@@ -40,10 +39,6 @@ const useStyles = makeStyles((theme) => ({
     },
     header: {
         background: '#ddd',
-        padding: theme.spacing(3)
-    },
-    company: {
-        // background: '#eee',
         padding: theme.spacing(3)
     },
     main: {
@@ -100,7 +95,7 @@ function HomePage(props) {
         dispatch(productionsActions.delete(selectedProduction));
         setShowDelete(false);
         //dispatch(productionsActions.getAll());
-    }
+    }    
 
 
     useEffect(() => {
@@ -114,21 +109,19 @@ function HomePage(props) {
             <Navigation route="home" />
             <Box className={classes.content}>
                 <Box className={classes.header}>
-                    <Typography variant="h1" component="h1" gutterBottom style={{ fontFamily: 'Satisfy' }}>
+                <Typography variant="h1" component="h1" gutterBottom style={{fontFamily:'Satisfy'}}>
                         Scena.Studio
                     </Typography>
                     <Typography variant="h2" component="h2" gutterBottom>
-                        Get Started
-                    </Typography>
-                </Box>
-                <Box className={classes.company}>
-                    <Typography variant="h5" component="h5" gutterBottom>
                         {company.displayName}
+                    </Typography>
+                    <Typography variant="h3" component="h3" gutterBottom>
+                        Get Started
                     </Typography>
                 </Box>
                 <Box className={classes.main}>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
-                        Select A Production
+                        Productions
                     </Typography>
 
                     {productions.loading && <em>Loading productions...</em>}
@@ -136,10 +129,7 @@ function HomePage(props) {
                     {productions.items &&
                         <List dense={false}>
                             {productions.items.map((production, index) =>
-                                <ListItem key={production.id} button onClick={() => selectProduction(production.id)} selected={productions && productions.production && production.id === productions.production.id}>
-                                    <ListItemIcon>
-                                        <MovieIcon />
-                                    </ListItemIcon>
+                                <ListItem key={production.id} button onClick={() => selectProduction(production.id)}>
                                     <ListItemText primary={production.title} />
                                     <ListItemSecondaryAction>
                                         <IconButton edge="end" aria-label="delete" onClick={() => confirmDeleteProduction(production.id)}>
@@ -150,8 +140,8 @@ function HomePage(props) {
                             )}
                         </List>
                     }
+
                     <Button variant="contained" color="primary" onClick={() => toggleNewDialog()}>Create a new Production</Button>
-                    <Button variant="contained" color="secondary" onClick={() => confirmDeleteProduction(productions.production.id)} disabled={!(productions.production)}>Delete Production</Button>
 
                     <Dialog open={showNew} onClose={() => toggleNewDialog()} aria-labelledby="form-dialog-title">
                         <DialogTitle id="form-dialog-title">Create A New Production</DialogTitle>
@@ -187,7 +177,7 @@ function HomePage(props) {
                                 Delete
                             </Button>
                         </DialogActions>
-                    </Dialog>
+                    </Dialog>                    
                 </Box>
             </Box>
         </Box>

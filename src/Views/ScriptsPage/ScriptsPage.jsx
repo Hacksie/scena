@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, FormControl, TextField, Select, InputLabel, MenuItem } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import { Navigation } from '../../App/Navigation';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { userActions } from '../../_actions';
-
-import raw from './sample.txt';
-
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,35 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
-        height: '100vh',
         padding: theme.spacing(3),
-        '& .MuiTextField-root': {
-            marginTop: theme.spacing(3),
-        }
     },
-    versionSelect: {
-        width: '20vw'
-    },
-    scriptText: {
-        marginTop: theme.spacing(3),
-        height: '70vh !important',
-        overflowY: 'scroll',
-        fontFamily: 'Courier',
-        border:'1px solid #999',
-        whiteSpace: 'pre-line',
-
-    }
 }));
 
 function ScriptsPage() {
-    
+    const user = useSelector(state => state.authentication.user);
     const dispatch = useDispatch();
 
     const classes = useStyles();
     const theme = useTheme();
 
     useEffect(() => {
-
+        dispatch(userActions.getAll());
     }, []);
 
     function handleDeleteUser(id) {
@@ -56,26 +40,12 @@ function ScriptsPage() {
         <Box className={classes.root}>
             <Navigation route="scripts" />
             <Box className={classes.content}>
-                <FormControl className={classes.versionSelect}>
-                    <InputLabel shrink id="demo-simple-select-placeholder-label-label">
-                        Version
-                    </InputLabel>
-                    <Select value={1}>
-                        <MenuItem value={1}>1</MenuItem>
-                        <MenuItem value={2}>2</MenuItem>
-                        <MenuItem value={3}>3</MenuItem>
-                    </Select>
-                </FormControl>
-                <div contentEditable={true} className={classes.scriptText}>
-                    {raw}
-                </div>
-                {/* <FormControl fullWidth>
-                    <TextField id="title" name="title"  label="script" type="text" multiline variant="outlined"/>
-                </FormControl> */}
+                <Typography variant="h1" component="h2" gutterBottom>
+                    Scripts Page
+                </Typography>
             </Box>
         </Box>
     );
 }
-
 
 export { ScriptsPage };
