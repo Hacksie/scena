@@ -75,19 +75,9 @@ function App(props) {
     const dispatch = useDispatch();
 
     const handleClose = (event, reason) => {
-        //   if (reason === 'clickaway') {
-        //     return;
-        //   }
-
         dispatch(alertActions.clear());
-
-
     };
 
-
-    // const { window } = props;
-    // const classes = useStyles();
-    // const theme = useTheme();
 
     useEffect(() => {
         history.listen((location, action) => {

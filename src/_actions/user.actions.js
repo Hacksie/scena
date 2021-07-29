@@ -3,18 +3,37 @@ import { userService } from '../_services';
 import { alertActions } from './';
 import { history } from '../_helpers';
 
+import firebase from 'firebase/app'
+
 export const userActions = {
     login,
     logout,
     register,
     getAll,
-    delete: _delete
+    delete: _delete,
+    selectCompany
 };
 
 function login(username, password, from) {
     return dispatch => {
         dispatch(request({ username }));
 
+        firebase.login({
+            email: username,
+            password: password
+        })
+            .then(
+                user => {
+                    dispatch(success(user));
+                    history.push(from);
+                    dispatch(alertActions.success('Login successful'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            )
+        /*
         userService.login(username, password)
             .then(
                 user => { 
@@ -25,7 +44,7 @@ function login(username, password, from) {
                     dispatch(failure(error.toString()));
                     dispatch(alertActions.error(error.toString()));
                 }
-            );
+            );*/
     };
 
     function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
@@ -34,31 +53,60 @@ function login(username, password, from) {
 }
 
 function logout() {
-    userService.logout();
+    firebase.logout();
+    //userService.logout();
     return { type: userConstants.LOGOUT };
 }
 
 function register(user) {
     return dispatch => {
         dispatch(request(user));
-
-        userService.register(user)
-            .then(
-                user => { 
-                    dispatch(success());
-                    history.push('/login');
-                    dispatch(alertActions.success('Registration successful'));
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );
+        console.log(user);
+        firebase.createUser(
+            { email: user.email, password: user.password },
+            {
+                displayName: user.preferredName, username: user.email, email: user.email
+            }
+        ).then(
+            userData => {
+                dispatch(success(userData));
+                history.push('/login');
+                dispatch(alertActions.success('Registration successful'));
+            },
+            error => {
+                dispatch(failure(error.toString()));
+                dispatch(alertActions.error(error.toString()));
+            }
+        )
     };
 
     function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
     function success(user) { return { type: userConstants.REGISTER_SUCCESS, user } }
     function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
+}
+
+function selectCompany(companyId) {
+
+    return dispatch => {
+        dispatch(request(companyId));
+
+        //const ref = firebase.firestore().collection('users').get(profileId);
+        firebase.updateProfile({selectedCompany: companyId})
+            .then(
+                profile => {
+                    dispatch(success(profile));
+                    dispatch(alertActions.success('Company added to profile successful'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            )
+    };
+
+    function request(companyId) { return { type: userConstants.SELECTCOMPANY_REQUEST, companyId } }
+    function success(profile) { return { type: userConstants.SELECTCOMPANY_SUCCESS, profile} }
+    function failure(error) { return { type: userConstants.SELECTCOMPANY_FAILURE, error } }
 }
 
 function getAll() {

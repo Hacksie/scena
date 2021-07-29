@@ -25,16 +25,13 @@ function RegisterPage() {
     // const [user, setUser] = useState({
     //     name: '',
     //     preferredName: '',
-    //     username: '',
+    //     email: '',
     //     password: ''
     // });
 
-    const [company, setCompany] = useState({
-        companyId: '',
-        companyDisplayName: '',
-        name: '',
+    const [user, setUser] = useState({
         preferredName: '',
-        username: '',
+        email: '',
         password: ''
     });
 
@@ -54,15 +51,16 @@ function RegisterPage() {
 
     function handleChange(e) {
         const { name, value } = e.target;
-        setCompany(company => ({ ...company, [name]: value }));
+        setUser(user => ({ ...user, [name]: value }));
     }
 
     function handleSubmit(e) {
         e.preventDefault();
 
         setSubmitted(true);
-        if (company.companyId && company.companyDisplayName && company.name && company.preferredName && company.username && company.password) {
-            dispatch(companyActions.register(company));
+        if (user.preferredName && user.email && user.password) {
+            dispatch(userActions.register(user));
+            //dispatch(companyActions.register(company));
         }
     }
 
@@ -75,6 +73,16 @@ function RegisterPage() {
                 <form name="form" onSubmit={handleSubmit}>
                     <Card>
                         <CardContent>
+                            <FormControl fullWidth>
+                                <TextField required id="preferredName" name="preferredName" label="Preferred Name" onChange={handleChange} value={user.preferredName} />
+                              </FormControl>
+                            <FormControl fullWidth>
+                                <TextField required id="email" name="email" label="Account Email" onChange={handleChange} value={user.email} />
+                            </FormControl>
+                            <FormControl fullWidth>
+                                <TextField required type="password" id="password" name="password" label="Password" onChange={handleChange} value={user.password} />
+                              </FormControl>
+                            {/* <Divider />
                             <Typography className={classes.title} color="textSecondary" gutterBottom>
                                 Register New Company
                             </Typography>
@@ -89,32 +97,8 @@ function RegisterPage() {
                                 {submitted && !companyDisplayName &&
                                     <div className="invalid-feedback">companyDisplayName is required</div>
                                 }
-                            </FormControl>
-                            <Divider />
-                            <FormControl fullWidth>
-                                <TextField required id="name" name="name" label="Admin Name" onChange={handleChange} value={company.name} />
-                                {submitted && !name &&
-                                    <div className="invalid-feedback">Name is required</div>
-                                }
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required id="preferredName" name="preferredName" label="Admin Preferred Name" onChange={handleChange} value={company.preferredName} />
-                                {submitted && !username &&
-                                    <div className="invalid-feedback">Username is required</div>
-                                }
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required id="username" name="username" label="Admin Username" onChange={handleChange} value={company.username} />
-                                {submitted && !username &&
-                                    <div className="invalid-feedback">Username is required</div>
-                                }
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required type="password" id="password" name="password" label="Admin Password" onChange={handleChange} value={company.password} />
-                                {submitted && !password &&
-                                    <div className="invalid-feedback">Password is required</div>
-                                }
-                            </FormControl>
+                            </FormControl> */}
+                            
                         </CardContent>
                         <CardActions>
                             <Button variant="contained" type="submit" color="primary">Register</Button>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -83,8 +83,9 @@ const Navigation = (props) => {
     const { window } = props;
     const classes = useStyles();
     const theme = useTheme();
-    const [mobileOpen, setMobileOpen] = React.useState(false);
-    const user = useSelector(state => state.authentication.user);
+    
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const profile = useSelector(state => state.firebase.profile);
     const production = useSelector(state => state.productions.production);
     const container = window !== undefined ? () => window().document.body : undefined;
 
@@ -101,28 +102,28 @@ const Navigation = (props) => {
                 </Button>
             </Tooltip>
             <List>
-                {user && user.permissions.includes("canViewProduction") && production &&
+                {profile && profile.selectedCompany && //profile.permissions.includes("canViewProduction") && production &&
                     <Tooltip title="Production">
                         <ListItem button key='Production' component={Link} to="/production" selected={props.route == 'production'}>
                             <ListItemIcon><MovieIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {user && user.permissions.includes("canViewScenes") && production &&
+                {profile && profile.selectedCompany && //profile.permissions.includes("canViewScenes") && production &&
                     <Tooltip title="Scenes">
                         <ListItem button key='Scenes' component={Link} to="/scenes" selected={props.route == 'scenes'}>
                             <ListItemIcon><PermMediaIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {user && user.permissions.includes("canViewScripts") && production &&
+                {profile && profile.selectedCompany && //profile.permissions.includes("canViewScripts") && production &&
                     <Tooltip title="Scripts">
                         <ListItem button key='Scripts' component={Link} to="/scripts" selected={props.route == 'scripts'}>
                             <ListItemIcon><AssignmentIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {user && user.permissions.includes("canViewTeam") && production &&
+                {profile && profile.selectedCompany && //profile.permissions.includes("canViewTeam") && production &&
                     <Tooltip title="Team">
                         <ListItem button key='Team' component={Link} to="/team" selected={props.route == 'team'}>
                             <ListItemIcon><GroupIcon className={classes.icon} /></ListItemIcon>
@@ -130,7 +131,7 @@ const Navigation = (props) => {
                     </Tooltip>
                 }
                 <Divider />
-                {user && user.permissions.includes("canViewCompany") &&
+                {profile && profile.selectedCompany && //profile.permissions.includes("canViewCompany") &&
                     <Tooltip title="Production Company">
                         <ListItem button key='Company' component={Link} to="/company" selected={props.route == 'company'}>
                             <ListItemIcon><TheatersIcon className={classes.icon} /></ListItemIcon>
