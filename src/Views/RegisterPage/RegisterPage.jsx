@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Container, Button, Divider, FormControl, Card, CardActions, CardContent, TextField, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { companyActions } from '../../_actions';
-import { userActions } from '../../_actions';
+import { companyActions } from '../../Components/Company';
+import { userActions } from '../../Components/User';
 
 const useStyles = makeStyles((theme) => ({
     content: {
@@ -36,7 +36,7 @@ function RegisterPage() {
     });
 
     const [submitted, setSubmitted] = useState(false);
-    const registering = useSelector(state => state.registration.registering);
+    //const registering = useSelector(state => state.registration.registering);
     const dispatch = useDispatch();
 
     const classes = useStyles();

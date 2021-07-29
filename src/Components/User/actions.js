@@ -1,9 +1,12 @@
-import { userConstants } from '../_constants';
-import { userService } from '../_services';
-import { alertActions } from './';
-import { history } from '../_helpers';
-
 import firebase from 'firebase/app'
+import { userConstants } from './constants';
+//import { userService } from '../../_services';
+//import { alertActions } from './';
+
+import { history } from '../History';
+
+import { alertActions } from '../Alerts';
+
 
 export const userActions = {
     login,
@@ -33,18 +36,6 @@ function login(username, password, from) {
                     dispatch(alertActions.error(error.toString()));
                 }
             )
-        /*
-        userService.login(username, password)
-            .then(
-                user => { 
-                    dispatch(success(user));
-                    history.push(from);
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );*/
     };
 
     function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
@@ -54,7 +45,6 @@ function login(username, password, from) {
 
 function logout() {
     firebase.logout();
-    //userService.logout();
     return { type: userConstants.LOGOUT };
 }
 
@@ -91,7 +81,7 @@ function selectCompany(companyId) {
         dispatch(request(companyId));
 
         //const ref = firebase.firestore().collection('users').get(profileId);
-        firebase.updateProfile({selectedCompany: companyId})
+        firebase.updateProfile({ selectedCompany: companyId })
             .then(
                 profile => {
                     dispatch(success(profile));
@@ -105,19 +95,19 @@ function selectCompany(companyId) {
     };
 
     function request(companyId) { return { type: userConstants.SELECTCOMPANY_REQUEST, companyId } }
-    function success(profile) { return { type: userConstants.SELECTCOMPANY_SUCCESS, profile} }
+    function success(profile) { return { type: userConstants.SELECTCOMPANY_SUCCESS, profile } }
     function failure(error) { return { type: userConstants.SELECTCOMPANY_FAILURE, error } }
 }
 
 function getAll() {
     return dispatch => {
         dispatch(request());
-
+        /*
         userService.getAll()
             .then(
                 users => dispatch(success(users)),
                 error => dispatch(failure(error.toString()))
-            );
+            );*/
     };
 
     function request() { return { type: userConstants.GETALL_REQUEST } }
@@ -129,12 +119,12 @@ function getAll() {
 function _delete(id) {
     return dispatch => {
         dispatch(request(id));
-
+/*
         userService.delete(id)
             .then(
                 user => dispatch(success(id)),
                 error => dispatch(failure(id, error.toString()))
-            );
+            );*/
     };
 
     function request(id) { return { type: userConstants.DELETE_REQUEST, id } }

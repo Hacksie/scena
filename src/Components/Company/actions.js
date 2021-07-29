@@ -1,14 +1,12 @@
-import { companyConstants } from '../_constants';
-import { companyService } from '../_services';
-import { alertActions } from '.';
-import { userActions } from '.';
-
-import { history } from '../_helpers';
-
 import firebase from 'firebase/app';
 
-import { useFirestore } from 'react-redux-firebase'
-import { getFirestore } from 'redux-firestore';
+import { companyConstants } from './constants';
+import { alertActions } from '../Alerts';
+
+import { userActions } from '../User/actions';
+
+// import { useFirestore } from 'react-redux-firebase'
+// import { getFirestore } from 'redux-firestore';
 
 export const companyActions = {
     register,
@@ -26,15 +24,14 @@ function register(company) {
             createdBy: firebase.auth().currentUser.uid,
             users:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
         }
-        
-
 
         firebase.firestore().collection('companies').add(newCompany)
             .then(
                 company => { 
                     dispatch(success(company));
                     dispatch(alertActions.success('Company registration successful'));
-                    //dispatch(userActions.join(profileId, company.id));
+                    console.log(company);
+                    dispatch(userActions.selectCompany(company.id));
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -54,12 +51,12 @@ function getById(id) {
 
     return dispatch => {
         dispatch(request(id));
-
+/*
         companyService.getById(id)
             .then(
                 company => dispatch(success(company)),
                 error => dispatch(failure(id, error.toString()))
-            );
+            );*/
     };
 
     function request(id) { return { type: companyConstants.GET_REQUEST } }

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { isLoaded, isEmpty } from 'react-redux-firebase'
 
 function PrivateRoute({ component: Component, roles, ...rest }) {

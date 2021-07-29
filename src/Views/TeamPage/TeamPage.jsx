@@ -6,8 +6,8 @@ import { Button, Typography, Box, TextField, FormControl, FormControlLabel, Chec
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { productionsActions } from '../../_actions';
-import { teamActions } from '../../_actions';
+import { productionsActions } from '../../Components/Production';
+import { teamActions } from '../../Components/Team';
 
 function getModalStyle() {
     const top = 50 + rand();

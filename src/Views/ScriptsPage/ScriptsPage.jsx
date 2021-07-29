@@ -6,7 +6,7 @@ import { Box, FormControl, TextField, Select, InputLabel, MenuItem } from '@mate
 import { Navigation } from '../../App/Navigation';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-import { userActions } from '../../_actions';
+import { userActions } from '../../Components/User';
 
 import raw from './sample.txt';
 

@@ -5,8 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, Container, Button, FormControl, Card, CardActions,CardContent,TextField, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-
-import { userActions } from '../../_actions';
+import { userActions } from '../../Components/User';
 
 const useStyles = makeStyles((theme) => ({
     content: {
@@ -30,7 +29,7 @@ function LoginPage() {
     });
     const [submitted, setSubmitted] = useState(false);
     const { username, password } = inputs;
-    const loggingIn = useSelector(state => state.authentication.loggingIn);
+    //const loggingIn = useSelector(state => state.authentication.loggingIn);
     const dispatch = useDispatch();
     const location = useLocation();
 

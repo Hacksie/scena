@@ -16,9 +16,10 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { Navigation } from '../../App/Navigation';
 
-import { productionsActions } from '../../_actions';
-import { companyActions } from '../../_actions';
-import { userActions } from '../../_actions';
+
+import { productionsActions } from '../../Components/Production';
+import { companyActions } from '../../Components/Company';
+import { userActions } from '../../Components/User';
 
 
 function getModalStyle() {
@@ -41,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
         '& .MuiFormControl-root': {
             margin: theme.spacing(1),
-        }        
+        }
     },
     title: {
         // fontSize: 14,
@@ -61,30 +62,30 @@ const useStyles = makeStyles((theme) => ({
 
 function HomePage(props) {
 
-    //const firestore = useFirestore();
-
-
     //const auth = useSelector(state => state.firebase.auth);
     const profile = useSelector(state => state.firebase.profile);
     const productions = useSelector(state => state.productions);
     //const user = useSelector(state => state.authentication.user);
-    const company = useSelector(state => state.company);
+
     const dispatch = useDispatch();
     const [showNewCompany, setShowNewCompany] = useState(false);
-    const [showNew, setShowNew] = useState(false);
-    const [showDelete, setShowDelete] = useState(false);
-    const [selectedProduction, setSelectedProduction] = useState();
+    const [showNewProduction, setShowNewProduction] = useState(false);
+    const [showDeleteProduction, setShowDeleteProduction] = useState(false);
+    const [selectedProduction, setSelectedProduction] = useState(profile && profile.selectedProduction ? profile.selectedProduction : '');
     const [selectedCompany, setSelectedCompany] = useState(profile && profile.selectedCompany ? profile.selectedCompany : '');
-
-    const auth = useSelector(({ firebase: { auth } }) => auth)
-    const companies = useSelector(({ firestore: { data } }) => data.companies);
-
-    useFirestoreConnect(() => [{collection: 'companies', where: ['users', 'array-contains', auth && auth.uid ? auth.uid : '']}])
-
     const [inputs, setInputs] = useState({
         newCompanyTitle: '',
         newProductionTitle: ''
     });
+
+    const auth = useSelector(({ firebase: { auth } }) => auth)
+    const companies = useSelector(({ firestore: { data } }) => data.companies);
+
+    useFirestoreConnect(() => [{ collection: 'companies', where: ['users', 'array-contains', auth && auth.uid ? auth.uid : ''] }])
+    useFirestoreConnect(() => [{ collection: 'productions', where: ['users', 'array-contains', auth && auth.uid ? auth.uid : ''] }])
+
+
+
     const classes = useStyles();
 
     const toggleNewCompanyDialog = () => {
@@ -92,7 +93,6 @@ function HomePage(props) {
     }
 
     const handleSelectCompany = (event) => {
-        //console.log('select', event.target.value);
         dispatch(userActions.selectCompany(event.target.value));
         setSelectedCompany(event.target.value);
     }
@@ -101,33 +101,23 @@ function HomePage(props) {
         dispatch(companyActions.register({
             title: inputs.newCompanyTitle
         }))
-        // dispatch(productionsActions.add({
-        //     title: inputs.newProductionTitle
-        // }));
         setShowNewCompany(false);
-        // dispatch(productionsActions.getAll());
     }
 
-
-    const toggleNewDialog = () => {
-        setShowNew(!showNew);
+    const toggleNewProductionDialog = () => {
+        setShowNewProduction(!showNewProduction);
     }
 
-    const toggleDeleteDialog = () => {
-        setShowDelete(!showDelete);
+    const toggleDeleteProductionDialog = () => {
+        setShowDeleteProduction(!showDeleteProduction);
     }
 
-    const handleCreate = () => {
+    const handleCreateProduction = () => {
         dispatch(productionsActions.add({
             title: inputs.newProductionTitle
         }));
         setShowNew(false);
         dispatch(productionsActions.getAll());
-    }
-
-    const handleInputs = (e) => {
-        const { id, value } = e.target;
-        setInputs(inputs => ({ ...inputs, [id]: value }));
     }
 
     const selectProduction = (id) => {
@@ -140,18 +130,16 @@ function HomePage(props) {
         toggleDeleteDialog();
     }
 
-    const handleDelete = () => {
+    const handleDeleteProduction = () => {
         dispatch(productionsActions.delete(selectedProduction));
         setShowDelete(false);
         //dispatch(productionsActions.getAll());
     }
 
-
-    useEffect(() => {
-        //dispatch(companyActions.getById(user.companyId));
-        //dispatch(productionsActions.getAll());
-    }, []);
-
+    const handleInputs = (e) => {
+        const { id, value } = e.target;
+        setInputs(inputs => ({ ...inputs, [id]: value }));
+    }
 
     return (
         <Box className={classes.root}>
@@ -165,31 +153,31 @@ function HomePage(props) {
                         Get Started
                     </Typography>
                 </Box>
-                {profile && !profile.selectedCompany &&
+                {profile && companies && profile.selectedCompany && companies[profile.selectedCompany] &&
                     <Box className={classes.company}>
                         <Typography variant="h5" component="h5" gutterBottom>
-                            Select a production company
+                            Current Production Company - {companies[profile.selectedCompany].title}
                         </Typography>
-                        {companies && 
+                    </Box>
+                }
+
+                {profile &&
+                    <Box className={classes.company}>
+                        <Typography variant="h5" component="h5" gutterBottom>
+                            Change Production Company
+                        </Typography>
+                        {companies &&
                             <FormControl fullWidth>
                                 <InputLabel id="demo-simple-select-helper-label">Production Company</InputLabel>
-                                <Select
-                                    labelId="demo-simple-select-label"
-                                    id="demo-simple-select"
-                                    onChange={handleSelectCompany}
-                                    value={selectedCompany ? selectedCompany : ''}
-                                >
+                                <Select labelId="demo-simple-select-label" id="demo-simple-select" onChange={handleSelectCompany} value={selectedCompany ? selectedCompany : ''} >
                                     {Object.entries(companies).map((company, index) =>
                                         <MenuItem key={company[0]} value={company[0]}>{company[1].title}</MenuItem>
-                                    )
-
-                                    }
+                                    )}
                                 </Select>
                             </FormControl>
                         }
                         <Button variant="contained" color="primary" onClick={() => toggleNewCompanyDialog()}>Create a new Production Company</Button>
                     </Box>
-
                 }
                 <Dialog open={showNewCompany} onClose={() => toggleNewCompanyDialog()} aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title">Create A New Production Company</DialogTitle>
@@ -209,12 +197,54 @@ function HomePage(props) {
                         </Button>
                     </DialogActions>
                 </Dialog>
+                {profile && companies && productions && profile.selectedCompany && companies[profile.selectedCompany] &&
+                    <React.Fragment>
+                        <Box className={classes.main}>
+                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                                Change Production
+                            </Typography>
+                            <Button variant="contained" color="primary" onClick={() => toggleNewProductionDialog()}>Create a new Production</Button>
+                            <Button variant="contained" color="secondary" onClick={() => confirmDeleteProduction(productions.production.id)} disabled={!(productions.production)}>Delete Production</Button>
+                        </Box>
+                        <Dialog open={showNewProduction} onClose={() => toggleNewProductionDialog()} aria-labelledby="form-dialog-title">
+                            <DialogTitle id="form-dialog-title">Create A New Production</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    Enter the new production details
+                                </DialogContentText>
+                                <TextField autoFocus margin="dense" id="newProductionTitle" label="Production Title" type="text" value={inputs.newProductionTitle}
+                                    onChange={handleInputs} fullWidth />
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => toggleNewProductionDialog()}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleCreateProduction} color="primary">
+                                    Create
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                        <Dialog open={showDeleteProduction} onClose={() => toggleDeleteProductionDialog()} aria-labelledby="form-dialog-title">
+                            <DialogTitle id="form-dialog-title">Delete Production?</DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    Confirm you want to delete production {selectedProduction}.
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={() => toggleDeleteProductionDialog()}>
+                                    Cancel
+                                </Button>
+                                <Button onClick={handleDeleteProduction} color="primary">
+                                    Delete
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
+                    </React.Fragment>
+                }
 
-                {/* <Box className={classes.company}>
-                    <Typography variant="h5" component="h5" gutterBottom>
-                        {company.displayName}
-                    </Typography>
-                </Box>
+                {/* 
+
                 <Box className={classes.main}>
                     <Typography className={classes.title} color="textSecondary" gutterBottom>
                         Select A Production
@@ -239,44 +269,7 @@ function HomePage(props) {
                             )}
                         </List>
                     }
-                    <Button variant="contained" color="primary" onClick={() => toggleNewDialog()}>Create a new Production</Button>
-                    <Button variant="contained" color="secondary" onClick={() => confirmDeleteProduction(productions.production.id)} disabled={!(productions.production)}>Delete Production</Button>
-
-                    <Dialog open={showNew} onClose={() => toggleNewDialog()} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">Create A New Production</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                Enter the new production details
-                            </DialogContentText>
-                            <TextField autoFocus margin="dense" id="newProductionTitle" label="Production Title" type="text" value={inputs.newProductionTitle}
-                                onChange={handleInputs} fullWidth />
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => toggleNewDialog()}>
-                                Cancel
-                            </Button>
-                            <Button onClick={handleCreate} color="primary">
-                                Create
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
-
-                    <Dialog open={showDelete} onClose={() => toggleDeleteDialog()} aria-labelledby="form-dialog-title">
-                        <DialogTitle id="form-dialog-title">Delete Production?</DialogTitle>
-                        <DialogContent>
-                            <DialogContentText>
-                                Confirm you want to delete production {selectedProduction}.
-                            </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                            <Button onClick={() => toggleDeleteDialog()}>
-                                Cancel
-                            </Button>
-                            <Button onClick={handleDelete} color="primary">
-                                Delete
-                            </Button>
-                        </DialogActions>
-                    </Dialog>
+                    
                      
             </Box>*/}
             </Box>

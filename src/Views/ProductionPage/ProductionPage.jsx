@@ -10,7 +10,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { Navigation } from '../../App/Navigation';
 
-import { productionsActions } from '../../_actions';
+import { productionsActions } from '../../Components/Production';
 
 const useStyles = makeStyles((theme) => ({
     root: {

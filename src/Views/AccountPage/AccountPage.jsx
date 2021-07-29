@@ -2,13 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Card, CardContent, CardActions, Button, Typography, FormControl, TextField } from '@material-ui/core';
+import { Box, Button, Typography, FormControl, TextField } from '@material-ui/core';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { Navigation } from '../../App/Navigation';
-
-import { userActions } from '../../_actions';
+import { userActions } from '../../Components/User';
 
 const useStyles = makeStyles((theme) => ({
     root: {

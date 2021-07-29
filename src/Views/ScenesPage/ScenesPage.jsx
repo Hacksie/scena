@@ -9,7 +9,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { Navigation } from '../../App/Navigation';
 
-import { productionsActions } from '../../_actions';
+import { productionsActions } from '../../Components/Production';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -45,12 +45,10 @@ const useStyles = makeStyles((theme) => ({
     sceneView: {
         flexGrow: 1,
         padding: theme.spacing(3),
-        // paddingTop: '64px',
     },
     logView: {
         flexGrow: 1,
         paddingTop: theme.spacing(3),
-        // paddingTop: '64px',
     },
     newSceneBox: {
         backgroundColor: '#eee',
@@ -77,14 +75,8 @@ const useStyles = makeStyles((theme) => ({
         background: "#ddd",
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        // paddingLeft: theme.spacing(1),
-        // paddingRight: theme.spacing(1),
-        // paddingTop: theme.spacing(1),
         height: '70px',
         overflowX: 'scroll',
-        // [theme.breakpoints.up('sm')]: {
-        //     paddingTop: '14px',
-        // },
     },
     logList: {
         display: 'flex',

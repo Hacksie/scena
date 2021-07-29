@@ -1,4 +1,5 @@
-import { teamConstants } from '../_constants';
+import { teamConstants } from './constants';
+
 
 export function team(state = {}, action) {
     switch (action.type) {

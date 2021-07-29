@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Card, CardContent, CardActions,IconButton,Button, Typography, Box, TextField, FormControl, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { IconButton,Button, Typography, Box, TextField, FormControl, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -10,8 +9,8 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Navigation } from '../../App/Navigation';
 
 
-
-import { companyActions, userActions } from '../../_actions';
+import { companyActions } from '../../Components/Company';
+import { userActions } from '../../Components/User';
 
 const useStyles = makeStyles((theme) => ({
     root: {

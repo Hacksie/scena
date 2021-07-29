@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { Router, Route, Switch, Redirect, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { history } from '../_helpers';
-import { alertActions } from '../_actions';
-import { PrivateRoute } from '../_components';
+import { history } from '../Components/History';
+//import { alertActions } from '../_actions';
+
 import { HomePage } from '../Views/HomePage';
 import { LoginPage } from '../Views/LoginPage';
 import { RegisterPage } from '../Views/RegisterPage';
@@ -15,21 +15,11 @@ import { ScenesPage } from '../Views/ScenesPage';
 import { ScriptsPage } from '../Views/ScriptsPage';
 import { TeamPage } from '../Views/TeamPage';
 import { SettingsPage } from '../Views/SettingsPage';
-import MuiAlert from '@material-ui/lab/Alert';
-
-
-
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-
+import { PrivateRoute } from '../Components/PrivateRoute';
+import { AlertBar } from '../Components/Alerts';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const drawerWidth = 58;
 
@@ -71,28 +61,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function App(props) {
-    const alert = useSelector(state => state.alert);
-    const dispatch = useDispatch();
-
-    const handleClose = (event, reason) => {
-        dispatch(alertActions.clear());
-    };
 
 
-    useEffect(() => {
-        history.listen((location, action) => {
-            // clear alert on location change
-            dispatch(alertActions.clear());
-        });
-    }, []);
 
     return (
         <Router history={history}>
-            <Snackbar open={alert && alert.message !== undefined} autoHideDuration={3000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity={alert.type && alert.type.replace('alert-','')}>
-                    {alert.message}
-                </Alert>
-            </Snackbar>
+            <AlertBar />
             <Switch>
                 <PrivateRoute exact path="/" component={HomePage} />
                 <PrivateRoute exact path="/production" component={ProductionPage} />

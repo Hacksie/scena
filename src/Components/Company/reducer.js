@@ -1,4 +1,4 @@
-import { companyConstants } from '../_constants';
+import { companyConstants } from './constants';
 
 export function company(state = {}, action) {
     switch (action.type) {
@@ -23,6 +23,7 @@ export function company(state = {}, action) {
             return {
                 error: action.error
             };
+
         // case userConstants.DELETE_REQUEST:
         //     // add 'deleting:true' property to user being deleted
         //     return {

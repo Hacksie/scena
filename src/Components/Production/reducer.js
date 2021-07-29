@@ -1,4 +1,4 @@
-import { productionsConstants } from '../_constants';
+import { productionsConstants } from './constants';
 
 let production = JSON.parse(localStorage.getItem('production'));
 const initialState = production ? { loading: false, production } : {};
