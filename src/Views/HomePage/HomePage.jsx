@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Button, IconButton, Typography, TextField, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { useFirestoreConnect } from 'react-redux-firebase';
+//import useFirestoreConnect from 'react-firebase';
+
+import { Box, Button, IconButton, Typography, TextField, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -15,6 +18,8 @@ import { Navigation } from '../../App/Navigation';
 
 import { productionsActions } from '../../_actions';
 import { companyActions } from '../../_actions';
+import { userActions } from '../../_actions';
+
 
 function getModalStyle() {
     const top = 50 + rand();
@@ -34,6 +39,9 @@ const useStyles = makeStyles((theme) => ({
     },
     content: {
         flexGrow: 1,
+        '& .MuiFormControl-root': {
+            margin: theme.spacing(1),
+        }        
     },
     title: {
         // fontSize: 14,
@@ -52,18 +60,54 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function HomePage(props) {
+
+    //const firestore = useFirestore();
+
+
+    //const auth = useSelector(state => state.firebase.auth);
+    const profile = useSelector(state => state.firebase.profile);
     const productions = useSelector(state => state.productions);
-    const user = useSelector(state => state.authentication.user);
+    //const user = useSelector(state => state.authentication.user);
     const company = useSelector(state => state.company);
     const dispatch = useDispatch();
+    const [showNewCompany, setShowNewCompany] = useState(false);
     const [showNew, setShowNew] = useState(false);
     const [showDelete, setShowDelete] = useState(false);
     const [selectedProduction, setSelectedProduction] = useState();
+    const [selectedCompany, setSelectedCompany] = useState(profile && profile.selectedCompany ? profile.selectedCompany : '');
+
+    const auth = useSelector(({ firebase: { auth } }) => auth)
+    const companies = useSelector(({ firestore: { data } }) => data.companies);
+
+    useFirestoreConnect(() => [{collection: 'companies', where: ['users', 'array-contains', auth && auth.uid ? auth.uid : '']}])
 
     const [inputs, setInputs] = useState({
+        newCompanyTitle: '',
         newProductionTitle: ''
     });
     const classes = useStyles();
+
+    const toggleNewCompanyDialog = () => {
+        setShowNewCompany(!showNewCompany);
+    }
+
+    const handleSelectCompany = (event) => {
+        //console.log('select', event.target.value);
+        dispatch(userActions.selectCompany(event.target.value));
+        setSelectedCompany(event.target.value);
+    }
+
+    const handleCreateCompany = () => {
+        dispatch(companyActions.register({
+            title: inputs.newCompanyTitle
+        }))
+        // dispatch(productionsActions.add({
+        //     title: inputs.newProductionTitle
+        // }));
+        setShowNewCompany(false);
+        // dispatch(productionsActions.getAll());
+    }
+
 
     const toggleNewDialog = () => {
         setShowNew(!showNew);
@@ -104,8 +148,8 @@ function HomePage(props) {
 
 
     useEffect(() => {
-        dispatch(companyActions.getById(user.companyId));
-        dispatch(productionsActions.getAll());
+        //dispatch(companyActions.getById(user.companyId));
+        //dispatch(productionsActions.getAll());
     }, []);
 
 
@@ -121,7 +165,52 @@ function HomePage(props) {
                         Get Started
                     </Typography>
                 </Box>
-                <Box className={classes.company}>
+                {profile && !profile.selectedCompany &&
+                    <Box className={classes.company}>
+                        <Typography variant="h5" component="h5" gutterBottom>
+                            Select a production company
+                        </Typography>
+                        {companies && 
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-helper-label">Production Company</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    onChange={handleSelectCompany}
+                                    value={selectedCompany ? selectedCompany : ''}
+                                >
+                                    {Object.entries(companies).map((company, index) =>
+                                        <MenuItem key={company[0]} value={company[0]}>{company[1].title}</MenuItem>
+                                    )
+
+                                    }
+                                </Select>
+                            </FormControl>
+                        }
+                        <Button variant="contained" color="primary" onClick={() => toggleNewCompanyDialog()}>Create a new Production Company</Button>
+                    </Box>
+
+                }
+                <Dialog open={showNewCompany} onClose={() => toggleNewCompanyDialog()} aria-labelledby="form-dialog-title">
+                    <DialogTitle id="form-dialog-title">Create A New Production Company</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Enter the new company details
+                        </DialogContentText>
+                        <TextField autoFocus margin="dense" id="newCompanyTitle" label="Production Company Title" type="text" value={inputs.newCompanyTitle}
+                            onChange={handleInputs} fullWidth />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => toggleNewCompanyDialog()}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleCreateCompany} color="primary">
+                            Create
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* <Box className={classes.company}>
                     <Typography variant="h5" component="h5" gutterBottom>
                         {company.displayName}
                     </Typography>
@@ -188,9 +277,10 @@ function HomePage(props) {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                </Box>
+                     
+            </Box>*/}
             </Box>
-        </Box>
+        </Box >
     );
 }
 

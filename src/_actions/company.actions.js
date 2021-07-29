@@ -1,8 +1,14 @@
 import { companyConstants } from '../_constants';
 import { companyService } from '../_services';
 import { alertActions } from '.';
+import { userActions } from '.';
 
 import { history } from '../_helpers';
+
+import firebase from 'firebase/app';
+
+import { useFirestore } from 'react-redux-firebase'
+import { getFirestore } from 'redux-firestore';
 
 export const companyActions = {
     register,
@@ -10,17 +16,25 @@ export const companyActions = {
 };
 
 
-
 function register(company) {
+
     return dispatch => {
         dispatch(request(company));
 
-        companyService.register(company)
+        const newCompany = {
+            ...company,
+            createdBy: firebase.auth().currentUser.uid,
+            users:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
+        }
+        
+
+
+        firebase.firestore().collection('companies').add(newCompany)
             .then(
                 company => { 
-                    dispatch(success());
-                    history.push('/login');
+                    dispatch(success(company));
                     dispatch(alertActions.success('Company registration successful'));
+                    //dispatch(userActions.join(profileId, company.id));
                 },
                 error => {
                     dispatch(failure(error.toString()));
