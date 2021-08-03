@@ -1,56 +1,55 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { Box, Card, CardContent, CardActions, Button, Typography, FormControl, TextField } from '@material-ui/core';
-
+import { Box, Button, Typography, FormControl, TextField, Card, CardContent, CardActions, Divider } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-
 import { Navigation } from '../../App/Navigation';
-
-import { userActions } from '../../_actions';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
     },
+    title: {
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        '& .MuiTextField-root': {
+        '& .MuiFormControl-root': {
             margin: theme.spacing(1),
         }
     },
     card: {
-        marginBottom: theme.spacing(3)
+        padding: theme.spacing(1),
+        margin: theme.spacing(3),
+        border: `1px solid ${theme.palette.divider}`,
     }
 }));
 
 
-
 function AccountPage() {
+    const dispatch = useDispatch();
+    const profile = useSelector(state => state.firebase.profile);
+
     const [inputs, setInputs] = useState({
+        displayName: profile && profile.displayName,
         oldPassword: '',
         newPassword: '',
         confirmPassword: ''
     });
 
-    const { oldPassword, newPassword, confirmPassword } = inputs;
-
-    const user = useSelector(state => state.authentication.user);
-    const dispatch = useDispatch();
-
     const classes = useStyles();
 
     useEffect(() => {
-        dispatch(userActions.getAll());
-    }, []);
+        setInputs({ ...inputs, displayName: profile.displayName })
+
+    }, [profile])
 
     function handlePasswordChange(e) {
         const { id, value } = e.target;
         setInputs(inputs => ({ ...inputs, [id]: value }));
     }
-
 
     function handlePasswordSubmit(e) {
         e.preventDefault();
@@ -65,53 +64,38 @@ function AccountPage() {
         <Box className={classes.root}>
             <Navigation route="account" />
             <Box className={classes.content}>
-                <Typography variant="h1" component="h1" gutterBottom>
-                    Account Settings
-                </Typography>
                 <Box className={classes.card}>
-                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    <Typography className={classes.title} color="textPrimary" gutterBottom>
                         Update Account Details
                     </Typography>
                     <FormControl fullWidth>
-                        <TextField required id="name" name="name" label="Name" value={user.name} />
+                        <TextField required id="displayName" name="displayName" label="Preferred Name" value={inputs.displayName || ''} />
                     </FormControl>
-                    <FormControl fullWidth>
-                        <TextField required id="preferredName" name="preferredName" label="Preferred Name" value={user.preferredName} />
-                    </FormControl>
-
                     <Button variant="contained" type="submit" color="primary">Save Details</Button>
                 </Box>
-                <Box className={classes.card}>
-                    <form name="form" onSubmit={handlePasswordSubmit}>
-
-                        <Typography className={classes.title} color="textSecondary" gutterBottom>
+                <form name="form" onSubmit={handlePasswordSubmit}>
+                    <Box className={classes.card}>
+                        <Typography className={classes.title} color="textPrimary" gutterBottom>
                             Update Password
                         </Typography>
                         <FormControl fullWidth>
-                            <TextField required id="oldPassword" name="oldPassword" type="password" label="Old Password" onChange={handlePasswordChange} value={oldPassword} variant="outlined" />
-                            {/* {submitted && !password &&
-                                <div className="invalid-feedback">Password is required</div>
-                            } */}
+                            <TextField required id="oldPassword" name="oldPassword" type="password" label="Old Password" onChange={handlePasswordChange} value={inputs.oldPassword} />
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField required id="newPassword" name="newPassword" type="password" label="New Password" onChange={handlePasswordChange} value={newPassword} variant="outlined" />
-                            {/* {submitted && !password &&
-                                <div className="invalid-feedback">Password is required</div>
-                            } */}
+                            <TextField required id="newPassword" name="newPassword" type="password" label="New Password" onChange={handlePasswordChange} value={inputs.newPassword} />
                         </FormControl>
                         <FormControl fullWidth>
-                            <TextField required id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" onChange={handlePasswordChange} value={confirmPassword} variant="outlined" />
-                            {/* {submitted && !password &&
-                                <div className="invalid-feedback">Password is required</div>
-                            } */}
+                            <TextField required id="confirmPassword" name="confirmPassword" type="password" label="Confirm Password" onChange={handlePasswordChange} value={inputs.confirmPassword} />
                         </FormControl>
-
                         <Button variant="contained" type="submit" color="primary">Update Password</Button>
-
-                    </form>
+                    </Box>
+                </form>
+                <Box className={classes.card}>
+                    <Typography className={classes.title} color="textPrimary" gutterBottom>
+                        Log out
+                    </Typography>
+                    <Button variant="contained" component={Link} to='/login'>Log out</Button>
                 </Box>
-                <Button variant="contained" component={Link} to='/login'>Logout</Button>
-
             </Box>
         </Box>
     );

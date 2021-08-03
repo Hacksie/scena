@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFirestoreConnect } from 'react-redux-firebase';
 
-import { Card, CardContent, CardActions,IconButton,Button, Typography, Box, TextField, FormControl, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { IconButton, Button, Typography, Box, TextField, FormControl, List, ListItem, ListItemText, ListItemSecondaryAction } from '@material-ui/core';
+import { Card, CardContent, CardActions } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -10,116 +11,75 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Navigation } from '../../App/Navigation';
 
 
-
-import { companyActions, userActions } from '../../_actions';
+import { companyActions } from '../../Components/Company';
+import { userActions } from '../../Components/User';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex'
     },
+    title: {
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        '& .MuiTextField-root': {
+        '& .MuiFormControl-root': {
             margin: theme.spacing(1),
         }
     },
-    title: {
-        // fontSize: 14,
-    },
     card: {
-        margin: theme.spacing(3)
+        padding: theme.spacing(1),
+        margin: theme.spacing(3),
+        border: `1px solid ${theme.palette.divider}`,
     }
 }));
 
 function CompanyPage() {
-    const user = useSelector(state => state.authentication.user);
-    const users = useSelector(state => state.users);
-    const company = useSelector(state => state.company);
-
     const dispatch = useDispatch();
+    const profile = useSelector(state => state.firebase.profile);
+
+    useFirestoreConnect(() => [{ collection: 'companies', doc: (profile && profile.selectedCompany ? profile.selectedCompany : '*'), storeAs: 'currentCompany' }])
+
+    const company = useSelector(({ firestore: { data } }) => data.currentCompany);
+
+    const [inputs, setInputs] = useState({
+        companyTitle: '',
+        companyLogo: ''
+    });
 
     const classes = useStyles();
     const theme = useTheme();
 
     useEffect(() => {
-        dispatch(companyActions.getById(user.companyId));
-    }, []);
+        setInputs({ companyTitle: company && company.title })
+    }, [company])
 
-    useEffect(() => {
-        dispatch(userActions.getAll());
-    }, []);
 
     function handleChange(e) {
-        // const member = {
-        //     id: 1,
-        //     name: 'ben wise',
-        //     roles: ['cast']
-
-        // }
-        // dispatch(teamActions.add(member));
+        const { id, value } = e.target;
+        setInputs(inputs => ({ ...inputs, [id]: value }));
     }
 
+    const handleUpdateCompany = (id) => {
+        dispatch(companyActions.update(profile.selectedCompany, { title: inputs.companyTitle }));
+    }
 
     return (
         <Box className={classes.root}>
             <Navigation route="company" />
             <Box className={classes.content}>
                 <Box className={classes.card}>
-
-                        <Typography className={classes.title} color="textSecondary" gutterBottom>
-                            Company
-                        </Typography>
-                        <FormControl fullWidth>
-                            <TextField id="companyId" name="companyId" label="Company Id" onChange={handleChange} value={company.id || ''} disabled />
-                        </FormControl>
-                        <FormControl fullWidth>
-                            <TextField id="companyDisplayName" name="companyDisplayName" label="Company Title" onChange={handleChange} value={company.displayName || ''} />
-                        </FormControl>
-                        <FormControl fullWidth>
-                            <TextField id="companyLogo" name="companyLogo" label="Company Logo" onChange={handleChange} value={company.logo || ''} />
-                        </FormControl>
-                        <Button variant="contained" onClick={() => handleAddCastMember()} color="primary">Update</Button>
-                </Box>
-                <Box className={classes.card}>
-                        <Typography className={classes.title} color="textSecondary" gutterBottom>
-                            Users
-                        </Typography>
-
-                        {users.loading && <em>Loading users...</em>}
-                        {users.error && <span className="text-danger">ERROR: {users.error}</span>}
-                        {users.items &&
-
-                            <List dense={false}>
-                                {users.items.map((user, index) =>
-                                    <ListItem key={user.id} button>
-                                        <ListItemText primary={user.name}/>
-                                        <ListItemSecondaryAction>
-                                            <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                    </ListItem>
-                                )}
-                            </List>
-                        }
-
-                        {/* {users.loading && <em>Loading users...</em>}
-                        {users.error && <span className="text-danger">ERROR: {users.error}</span>}
-                        {users.items &&
-                            <ul>
-                                {users.items.map((user, index) =>
-                                    <li key={user.id}>
-                                        {user.name}
-                                        {
-                                            user.deleting ? <em> - Deleting...</em>
-                                                : user.deleteError ? <span className="text-danger"> - ERROR: {user.deleteError}</span>
-                                                    : <span> - <Button>Delete</Button> <a onClick={() => handleDeleteUser(user.id)} className="text-primary">Delete</a></span>
-                                        }
-                                    </li>
-                                )}
-                            </ul>
-                        } */}
+                    <Typography className={classes.title} color="textSecondary" gutterBottom>
+                        Company
+                    </Typography>
+                    <FormControl fullWidth>
+                        <TextField id="companyTitle" name="companyTitle" label="Company Title" onChange={handleChange} value={inputs.companyTitle || ''} />
+                    </FormControl>
+                    <FormControl fullWidth>
+                        <TextField id="companyLogo" name="companyLogo" label="Company Logo" onChange={handleChange} value={inputs.companyLogo || ''} />
+                    </FormControl>
+                    <Button variant="contained" onClick={() => handleUpdateCompany()} color="primary">Update</Button>
                 </Box>
             </Box>
         </Box>
