@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     content: {
         flexGrow: 1,
         '& .MuiFormControl-root': {
-            margin: theme.spacing(1),
+            margin: theme.spacing(0.5),
         }
     },
     card: {
@@ -79,7 +79,9 @@ function CompanyPage() {
                     <FormControl fullWidth>
                         <TextField id="companyLogo" name="companyLogo" label="Company Logo" onChange={handleChange} value={inputs.companyLogo || ''} />
                     </FormControl>
-                    <Button variant="contained" onClick={() => handleUpdateCompany()} color="primary">Update</Button>
+                    <CardActions>
+                        <Button variant="contained" onClick={() => handleUpdateCompany()} color="primary">Update</Button>
+                    </CardActions>
                 </Box>
             </Box>
         </Box>

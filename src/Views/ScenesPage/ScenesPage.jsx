@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFirestoreConnect } from 'react-redux-firebase';
 
-import { Box, Button, List, ListItem, ListItemSecondaryAction, ListItemIcon, ListItemText, CircularProgress, Typography, FormControl, TextField, Divider } from '@material-ui/core';
+import { Box, Button, List, ListItem, ListItemSecondaryAction, ListItemIcon, ListItemText, CardActions, CircularProgress, Typography, FormControl, TextField } from '@material-ui/core';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutlined';
 import SaveIcon from '@material-ui/icons/SaveOutlined';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
@@ -23,9 +23,13 @@ const useStyles = makeStyles((theme) => ({
         flexDirection: 'column',
         overflow: 'hidden',
         '& .MuiFormControl-root': {
-            //margin: theme.spacing(0.5),
+            margin: theme.spacing(0.5),
         }
     },
+    title: {
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },    
     card: {
         padding: theme.spacing(1),
         margin: theme.spacing(3),
@@ -93,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         //marginTop: theme.spacing(1),
         //paddingBottom: theme.spacing(3),
         padding: theme.spacing(1),
-        margin: theme.spacing(3),
+        margin: theme.spacing(0.5),
         border: `1px solid ${theme.palette.divider}`,
     },
     takeListBox: {
@@ -229,7 +233,7 @@ function ScenesPage() {
                                             <ListItemText primary={scene.title} />
                                         </ListItem>
                                     )}
-                                <ListItem key={-1} className={classes.newSceneBox} button onClick={() => handleNewScene()}>Add Scene</ListItem>
+                                <ListItem key={-1} className={classes.newSceneBox} button onClick={() => handleNewScene()}><AddCircleOutlineIcon /></ListItem>
                             </List>
                         </Box>
                         {currentScene &&
@@ -247,7 +251,9 @@ function ScenesPage() {
                                     <FormControl>
                                         <TextField id="title" name="title" label="lines end" onChange={handleChange} value={''} />
                                     </FormControl>
-                                    <Button variant="contained" onClick={() => handleUpdate()} color="primary">Save Scene</Button>
+                                    <CardActions>
+                                        <Button variant="contained" onClick={() => handleUpdate()} color="primary">Save Scene</Button>
+                                    </CardActions>
                                 </Box>
                                 <Box className={classes.takeView}>
                                     <Typography className={classes.title} color="textPrimary" gutterBottom>
@@ -261,7 +267,7 @@ function ScenesPage() {
                                                         {take.title}
                                                     </ListItem>
                                                 )}
-                                            <ListItem key={-1} className={classes.newTaskBox} button onClick={() => handleNewTake()}>New Take</ListItem>
+                                            <ListItem key={-1} className={classes.newTaskBox} button onClick={() => handleNewTake()}><AddCircleOutlineIcon /></ListItem>
                                         </List>
                                     </Box>
                                     {currentScene.takes && currentScene.currentTake > 0 &&

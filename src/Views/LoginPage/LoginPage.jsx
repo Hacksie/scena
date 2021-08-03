@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { Box, Container, Button, FormControl, Card, CardActions,CardContent,TextField, Typography } from '@material-ui/core';
+import { Box, Container, Button, FormControl, Card, CardActions, CardContent, TextField, Typography } from '@material-ui/core';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import { userActions } from '../../Components/User';
@@ -16,8 +16,18 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        fontSize: 14,
-    }
+        fontWeight:'700',
+        textTransform:'uppercase'
+    },
+    header: {
+        background: '#ddd',
+        padding: theme.spacing(4)
+    },
+    card: {
+        padding: theme.spacing(1),
+        margin: theme.spacing(3),
+        border: `1px solid ${theme.palette.divider}`,
+    },
 }));
 
 
@@ -60,35 +70,32 @@ function LoginPage() {
     return (
         <Box className={classes.content}>
             <Container maxWidth="sm">
-            <Typography variant="h1" component="h1" gutterBottom>
-                    Scena
+                <Typography variant="h1" component="h1" gutterBottom style={{ fontFamily: 'Satisfy', textAlign:'center' }}>
+                    Scena.Studio
                 </Typography>
                 <form name="form" onSubmit={handleSubmit}>
-                    <Card>
-                        <CardContent>
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    <Box className={classes.card}>
+                            <Typography className={classes.title} color="textPrimary" gutterBottom>
                                 Login
                             </Typography>
                             <FormControl fullWidth>
-                                <TextField required id="username" name="username" label="Username" onChange={handleChange} value={username} variant="outlined"/>
+                                <TextField required id="username" name="username" label="Username" onChange={handleChange} value={username}/>
                                 {submitted && !username &&
                                     <div className="invalid-feedback">Username is required</div>
                                 }
                             </FormControl>
                             <FormControl fullWidth>
 
-                                <TextField required id="password" name="password" type="password" label="Password" onChange={handleChange} value={password} variant="outlined"/>
+                                <TextField required id="password" name="password" type="password" label="Password" onChange={handleChange} value={password}/>
                                 {submitted && !password &&
                                     <div className="invalid-feedback">Password is required</div>
                                 }
                             </FormControl>
-
-                        </CardContent>
-                        <CardActions>
+                            <CardActions>
                             <Button variant="contained" type="submit" color="primary">Login</Button>
                             <Button variant="contained" component={Link} to='/register'>Register</Button>
-                        </CardActions>
-                    </Card>
+                            </CardActions>
+                    </Box>
                 </form>
             </Container>
         </Box>

@@ -65,8 +65,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: 'inherit',
         color: 'white',
         borderRadius: 0,
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
+        paddingTop: theme.spacing(1.5),
+        paddingBottom: theme.spacing(1.5),
         marginTop: '1px',
         marginLeft: '1px',
         marginBottom: theme.spacing(5)

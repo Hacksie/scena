@@ -151,8 +151,10 @@ function TeamPage() {
                     {production && (!production.team || production.team.filter(x => x.crewRoles && x.crewRoles.length > 0).length == 0) &&
                         <Box>No crew members</Box>
                     }
+                    <CardActions>
                     <Button variant="contained" onClick={() => toggleNewDialog()} color="primary">Add</Button>
                     <Button variant="contained" onClick={() => toggleNewDialog()} disabled>Delete</Button>
+                    </CardActions>
                 </Box>
                 <Dialog open={showNew} onClose={() => toggleNewDialog()} aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title">Add a team member</DialogTitle>

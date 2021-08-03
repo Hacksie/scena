@@ -50,8 +50,8 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        fontWeight:'700',
-        textTransform:'uppercase'
+        fontWeight: '700',
+        textTransform: 'uppercase'
     },
     header: {
         background: '#ddd',
@@ -181,9 +181,9 @@ function HomePage(props) {
                             </Typography>
                             {!isLoaded(companies) &&
                                 <CircularProgress />
-                            }                            
+                            }
                             {companies &&
-                                <FormControl fullWidth>
+                                <FormControl>
                                     <InputLabel>Production Company</InputLabel>
                                     <Select onChange={handleSelectCompany} value={profile.selectedCompany ? profile.selectedCompany : ''} >
                                         {Object.entries(companies).map((company, index) =>
@@ -192,7 +192,9 @@ function HomePage(props) {
                                     </Select>
                                 </FormControl>
                             }
-                            <Button color="primary" variant="contained" onClick={() => toggleNewCompanyDialog()}>New Production Company</Button>
+                            <CardActions>
+                                <Button color="primary" variant="contained" onClick={() => toggleNewCompanyDialog()}>New Production Company</Button>
+                            </CardActions>
                         </Box>
                         {companies && profile.selectedCompany && companies[profile.selectedCompany] &&
                             <Box className={classes.production}>
@@ -201,7 +203,7 @@ function HomePage(props) {
                                 </Typography>
                                 {!isLoaded(productions) &&
                                     <CircularProgress />
-                                }                                
+                                }
                                 {productions &&
                                     <List dense={false}>
                                         {Object.entries(productions).map((production, index) =>
@@ -211,7 +213,7 @@ function HomePage(props) {
                                                 </ListItemIcon>
                                                 <ListItemText primary={production[1].title} />
                                                 <ListItemSecondaryAction>
-                                                {/* <IconButton edge="end" aria-label="edit"  onClick={() => confirmDeleteProduction(production[0])}> */}
+                                                    {/* <IconButton edge="end" aria-label="edit"  onClick={() => confirmDeleteProduction(production[0])}> */}
                                                     <IconButton edge="end" aria-label="edit" component={Link} to={`/production/${production[0]}`}>
                                                         <EditIcon />
                                                     </IconButton>
@@ -222,8 +224,9 @@ function HomePage(props) {
                                 }
 
                                 {(isEmpty(productions)) && <Typography>No current productions</Typography>}
-
-                                <Button color="primary" variant="contained" onClick={() => toggleNewProductionDialog()}>New Production</Button>
+                                <CardActions>
+                                    <Button color="primary" variant="contained" onClick={() => toggleNewProductionDialog()}>New Production</Button>
+                                </CardActions>
                                 {/* <Button variant="contained" color="secondary" onClick={() => confirmDeleteProduction(deleteProduction)} disabled={!(deleteProduction)}>Delete Production</Button> */}
                             </Box>
                         }
@@ -265,7 +268,7 @@ function HomePage(props) {
                         </Button>
                     </DialogActions>
                 </Dialog>
-{/*                 
+                {/*                 
                 <Dialog open={showDeleteProduction} onClose={() => toggleDeleteProductionDialog()} aria-labelledby="form-dialog-title">
                     <DialogTitle id="form-dialog-title">Delete Production?</DialogTitle>
                     <DialogContent>

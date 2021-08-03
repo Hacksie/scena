@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFirestoreConnect } from 'react-redux-firebase';
 
-import { Box, FormControl, TextField, Button, List, ListItem, ListItemText, ListItemIcon, Divider, CircularProgress } from '@material-ui/core';
+import { Box, FormControl, TextField, Button, List, ListItem, ListItemText, ListItemIcon, CardActions, CircularProgress } from '@material-ui/core';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
 import FaceIcon from '@material-ui/icons/FaceOutlined';
@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     title: {
         fontWeight: '700',
         textTransform: 'uppercase'
-    },    
+    },
     content: {
         flexGrow: 1,
         '& .MuiFormControl-root': {
@@ -112,8 +112,10 @@ function ProductionPage() {
                             <FormControl fullWidth>
                                 <TextField id="title" name="title" label="Production Title" value={inputs.title || ''} onChange={handleInputs} />
                             </FormControl>
-                            <Button variant="contained" color="primary" onClick={() => handleUpdate()}>Update Production</Button>
-                            <Button variant="contained" onClick={() => handleDelete()}>Delete Production</Button>
+                            <CardActions>
+                                <Button variant="contained" color="primary" onClick={() => handleUpdate()}>Update Production</Button>
+                                <Button variant="contained" onClick={() => handleDelete()}>Delete Production</Button>
+                            </CardActions>
                         </Box>
                         <Box className={classes.card}>
                             <Typography className={classes.title} color="textPrimary" gutterBottom>
@@ -134,7 +136,9 @@ function ProductionPage() {
                             {(!production.characters || production.characters.length == 0) &&
                                 <Box>No characters</Box>
                             }
-                            <Button variant="contained" color="secondary" onClick={() => toggleNewDialog()}>Add a character</Button>
+                            <CardActions>
+                                <Button variant="contained" color="secondary" onClick={() => toggleNewDialog()}>Add a character</Button>
+                            </CardActions>
                         </Box>
                     </React.Fragment>
                 }

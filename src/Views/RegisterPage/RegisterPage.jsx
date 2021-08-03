@@ -17,8 +17,19 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     title: {
-        fontSize: 14,
-    }
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },
+    header: {
+        background: '#ddd',
+        padding: theme.spacing(4)
+    },
+    card: {
+        padding: theme.spacing(1),
+        margin: theme.spacing(3),
+        border: `1px solid ${theme.palette.divider}`,
+    },
+
 }));
 
 function RegisterPage() {
@@ -71,41 +82,21 @@ function RegisterPage() {
                     Register
                 </Typography>
                 <form name="form" onSubmit={handleSubmit}>
-                    <Card>
-                        <CardContent>
-                            <FormControl fullWidth>
-                                <TextField required id="preferredName" name="preferredName" label="Preferred Name" onChange={handleChange} value={user.preferredName} />
-                              </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required id="email" name="email" label="Account Email" onChange={handleChange} value={user.email} />
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required type="password" id="password" name="password" label="Password" onChange={handleChange} value={user.password} />
-                              </FormControl>
-                            {/* <Divider />
-                            <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                Register New Company
-                            </Typography>
-                            <FormControl fullWidth>
-                                <TextField required id="companyId" name="companyId" label="Unique Company Id" onChange={handleChange} value={company.companyId} />
-                                {submitted && !companyId &&
-                                    <div className="invalid-feedback">companyId is required</div>
-                                }
-                            </FormControl>
-                            <FormControl fullWidth>
-                                <TextField required id="companyDisplayName" name="companyDisplayName" label="Company Title" onChange={handleChange} value={company.companyDisplayName} />
-                                {submitted && !companyDisplayName &&
-                                    <div className="invalid-feedback">companyDisplayName is required</div>
-                                }
-                            </FormControl> */}
-                            
-                        </CardContent>
+                    <Box className={classes.card}>
+                        <FormControl fullWidth>
+                            <TextField required id="preferredName" name="preferredName" label="Preferred Name" onChange={handleChange} value={user.preferredName} />
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <TextField required id="email" name="email" label="Account Email" onChange={handleChange} value={user.email} />
+                        </FormControl>
+                        <FormControl fullWidth>
+                            <TextField required type="password" id="password" name="password" label="Password" onChange={handleChange} value={user.password} />
+                        </FormControl>
                         <CardActions>
                             <Button variant="contained" type="submit" color="primary">Register</Button>
                             <Button variant="contained" component={Link} to='/login'>Cancel</Button>
                         </CardActions>
-
-                    </Card>
+                    </Box>
                 </form>
             </Container>
         </Box>
