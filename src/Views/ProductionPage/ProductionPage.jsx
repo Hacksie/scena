@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFirestoreConnect } from 'react-redux-firebase';
 
-import { Box, FormControl, TextField, Button, List, ListItem, ListItemText } from '@material-ui/core';
+import { Box, FormControl, TextField, Button, List, ListItem, ListItemText, ListItemIcon, Divider, CircularProgress } from '@material-ui/core';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import FaceIcon from '@material-ui/icons/FaceOutlined';
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
@@ -16,27 +17,36 @@ const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
     },
+    title: {
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },    
     content: {
         flexGrow: 1,
-        padding: theme.spacing(3),
-        '& .MuiTextField-root': {
+        '& .MuiFormControl-root': {
             margin: theme.spacing(1),
         }
     },
+    card: {
+        padding: theme.spacing(1),
+        margin: theme.spacing(3),
+        border: `1px solid ${theme.palette.divider}`,
+    }
 }));
 
-
-
 function ProductionPage() {
-    const production = useSelector(state => state.productions.production);
     const dispatch = useDispatch();
+    const profile = useSelector(state => state.firebase.profile);
+    useFirestoreConnect(() => [{ collection: 'productions', doc: (profile && profile.selectedProduction ? profile.selectedProduction : '*'), storeAs: 'production' }])
+
+    const production = useSelector(({ firestore: { data } }) => data.production);
 
     const classes = useStyles();
     const theme = useTheme();
 
     const [showNew, setShowNew] = useState(false);
     const [inputs, setInputs] = useState({
-        title: production.title,
+        title: production && production.title,
         character: ''
     });
 
@@ -47,8 +57,9 @@ function ProductionPage() {
     }
 
     useEffect(() => {
-        dispatch(productionsActions.getById(production.id));
-    }, []);
+        setInputs({ title: production && production.title ? production.title : '' })
+        //setCharacters(production && production.characters);
+    }, [production]);
 
     const toggleNewDialog = () => {
         setShowNew(!showNew);
@@ -60,13 +71,10 @@ function ProductionPage() {
             title: inputs.title
         };
 
-        dispatch(productionsActions.update(updatedProduction));
-        //dispatch(productionsActions.getAll());
+        dispatch(productionsActions.update(profile.selectedProduction, updatedProduction));
     }
 
     const handleCreate = () => {
-
-
         const newCharacters = production && production.characters ? [...production.characters] : [];
 
         newCharacters.push({
@@ -78,7 +86,7 @@ function ProductionPage() {
             characters: newCharacters
         };
 
-        dispatch(productionsActions.update(updatedProduction));
+        dispatch(productionsActions.update(profile.selectedProduction, updatedProduction));
         console.log(inputs.character);
         setShowNew(false);
     }
@@ -86,52 +94,68 @@ function ProductionPage() {
     const handleDelete = () => {
         dispatch(productionsActions.delete(selectedProduction));
         setShowDelete(false);
-        //dispatch(productionsActions.getAll());
     }
 
     return (
         <Box className={classes.root}>
             <Navigation route="production" />
             <Box className={classes.content}>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    Production details
-                </Typography>
-                <FormControl fullWidth>
-                    <TextField id="title" name="title" label="Production Title" value={inputs.title || ''} onChange={handleInputs} />
-                </FormControl>
-                <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    Characters
-                </Typography>
-                {production && production.characters &&
-                    <List>
-                        {production.characters.map((character, index) =>
-                            <ListItem key={index} button>
-                                <ListItemText>{character.name}</ListItemText>
-                            </ListItem>
-                        )}
-                    </List>
+                {!production &&
+                    <CircularProgress />
+                }
+                {production &&
+                    <React.Fragment>
+                        <Box className={classes.card}>
+                            <Typography className={classes.title} color="textPrimary" gutterBottom>
+                                Production details
+                            </Typography>
+                            <FormControl fullWidth>
+                                <TextField id="title" name="title" label="Production Title" value={inputs.title || ''} onChange={handleInputs} />
+                            </FormControl>
+                            <Button variant="contained" color="primary" onClick={() => handleUpdate()}>Update Production</Button>
+                            <Button variant="contained" onClick={() => handleDelete()}>Delete Production</Button>
+                        </Box>
+                        <Box className={classes.card}>
+                            <Typography className={classes.title} color="textPrimary" gutterBottom>
+                                Characters
+                            </Typography>
+                            {production.characters && production.characters.length > 0 &&
+                                <List>
+                                    {production.characters.map((character, index) =>
+                                        <ListItem key={index} button>
+                                            <ListItemIcon>
+                                                <FaceIcon />
+                                            </ListItemIcon>
+                                            <ListItemText>{character.name}</ListItemText>
+                                        </ListItem>
+                                    )}
+                                </List>
+                            }
+                            {(!production.characters || production.characters.length == 0) &&
+                                <Box>No characters</Box>
+                            }
+                            <Button variant="contained" color="secondary" onClick={() => toggleNewDialog()}>Add a character</Button>
+                        </Box>
+                    </React.Fragment>
                 }
                 <Dialog open={showNew} onClose={() => toggleNewDialog()} aria-labelledby="form-dialog-title">
-                    <DialogTitle id="form-dialog-title">Add a team member</DialogTitle>
+                    <DialogTitle id="form-dialog-title">Add a character</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
                             Enter the new character
                         </DialogContentText>
-                        <TextField autoFocus margin="dense" id="character" label="Name" type="text" value={inputs.character}
+                        <TextField autoFocus margin="dense" id="character" label="Name" type="text" value={inputs.character || ''}
                             onChange={handleInputs} fullWidth />
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => toggleNewDialog()}>
+                        <Button variant="contained" onClick={toggleNewDialog}>
                             Cancel
                         </Button>
-                        <Button onClick={handleCreate} color="primary">
+                        <Button variant="contained" onClick={handleCreate} color="primary">
                             Create
                         </Button>
                     </DialogActions>
                 </Dialog>
-                <Button variant="contained" color="secondary" onClick={() => toggleNewDialog()}>Add a character</Button>
-                <Button variant="contained" color="primary" onClick={() => handleUpdate()}>Update Production</Button>
-                <Button variant="contained" onClick={() => handleDelete()}>Delete Production</Button>
             </Box>
         </Box>
     );

@@ -1,7 +1,10 @@
+import firebase from 'firebase/app';
 import { productionsConstants } from './constants';
 //import { productionsService } from '../../_services';
 
 import { alertActions } from '../Alerts';
+import { userActions } from '../User';
+import { history } from '../History';
 // import { history } from '../_helpers';
 
 export const productionsActions = {
@@ -12,16 +15,87 @@ export const productionsActions = {
     update
 };
 
-function add(newProduction) {
+function add(production, companyId) {
     return dispatch => {
-        dispatch(request(newProduction));
-        /*
-        productionsService.add(newProduction)
+        dispatch(request(production));
+
+        const newProduction = {
+            ...production,
+            owner: firebase.auth().currentUser.uid,
+            created: new Date(),
+            users:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid),
+            companyId: companyId
+        }
+
+        firebase.firestore().collection('productions').add(newProduction)
+            .then(
+                production => { 
+                    dispatch(success(production));
+                    dispatch(userActions.selectProduction(production.id));
+                    dispatch(alertActions.success('Production added successfully'));
+                    history.push('/production');
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+    };
+
+    function request(production) { return { type: productionsConstants.ADD_REQUEST, production } }
+    function success(production) { return { type: productionsConstants.ADD_SUCCESS, production } }
+    function failure(error) { return { type: productionsConstants.ADD_FAILURE, error } }
+}
+
+function update(productionId, updatedProduction) {
+    return dispatch => {
+        dispatch(request(updatedProduction));
+
+        firebase.firestore().collection('productions').doc(productionId).update(updatedProduction)
             .then(
                 production => { 
                     dispatch(success(production));
                     //history.push('/team');
-                    dispatch(alertActions.success('Production added successfully'));
+                    dispatch(alertActions.success('Production updated successfully'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+    };
+
+    function request(production) { return { type: productionsConstants.UPDATE_REQUEST, production } }
+    function success(production) { return { type: productionsConstants.UPDATE_SUCCESS, production } }
+    function failure(error) { return { type: productionsConstants.UPDATE_FAILURE, error } }
+}
+
+function _delete(productionId, selectedProductionId) {
+
+    return dispatch => {
+        dispatch(request(productionId));
+        firebase.firestore().collection('productions').doc(productionId).delete()
+            .then(
+                production => { 
+                    dispatch(success(production));
+                    //history.push('/team');
+                    dispatch(alertActions.success('Production deleted successfully'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+
+        /*
+        productionsService.delete(productionId)
+            .then(
+                productionId => { 
+                    //console.log(production);
+                    dispatch(success(productionId));
+                    dispatch(getAll());
+                    //history.push('/team');
+                    dispatch(alertActions.success('Production deleted successfully'));
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -30,10 +104,11 @@ function add(newProduction) {
             );*/
     };
 
-    function request(production) { return { type: productionsConstants.ADD_REQUEST, production } }
-    function success(production) { return { type: productionsConstants.ADD_SUCCESS, production } }
-    function failure(error) { return { type: productionsConstants.ADD_FAILURE, error } }
+    function request(productionId) { return { type: productionsConstants.DELETE_REQUEST, productionId } }
+    function success(productionId) { return { type: productionsConstants.DELETE_SUCCESS } }
+    function failure(error) { return { type: productionsConstants.DELETE_FAILURE, error } }
 }
+
 
 function getAll() {
     return dispatch => {
@@ -68,52 +143,5 @@ function getById(id) {
     function failure(id, error) { return { type: productionsConstants.GET_FAILURE, id, error } }
 }
 
-function update(updatedProduction) {
-    return dispatch => {
-        dispatch(request(updatedProduction));
-        /*
-        productionsService.update(updatedProduction)
-            .then(
-                production => { 
 
-                    dispatch(success(production));
-                    //history.push('/team');
-                    dispatch(alertActions.success('Production updated successfully'));
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );*/
-    };
 
-    function request(production) { return { type: productionsConstants.UPDATE_REQUEST, production } }
-    function success(production) { return { type: productionsConstants.UPDATE_SUCCESS, production } }
-    function failure(error) { return { type: productionsConstants.UPDATE_FAILURE, error } }
-}
-
-function _delete(productionId) {
-    console.log('delete ' + productionId);
-    return dispatch => {
-        dispatch(request(productionId));
-        /*
-        productionsService.delete(productionId)
-            .then(
-                productionId => { 
-                    //console.log(production);
-                    dispatch(success(productionId));
-                    dispatch(getAll());
-                    //history.push('/team');
-                    dispatch(alertActions.success('Production deleted successfully'));
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );*/
-    };
-
-    function request(productionId) { return { type: productionsConstants.DELETE_REQUEST, productionId } }
-    function success(productionId) { return { type: productionsConstants.DELETE_SUCCESS } }
-    function failure(error) { return { type: productionsConstants.DELETE_FAILURE, error } }
-}

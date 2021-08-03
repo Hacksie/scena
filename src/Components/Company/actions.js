@@ -10,7 +10,7 @@ import { userActions } from '../User/actions';
 
 export const companyActions = {
     register,
-    getById
+    update,
 };
 
 
@@ -21,7 +21,8 @@ function register(company) {
 
         const newCompany = {
             ...company,
-            createdBy: firebase.auth().currentUser.uid,
+            owner: firebase.auth().currentUser.uid,
+            created: new Date(),
             users:firebase.firestore.FieldValue.arrayUnion(firebase.auth().currentUser.uid)
         }
 
@@ -30,7 +31,6 @@ function register(company) {
                 company => { 
                     dispatch(success(company));
                     dispatch(alertActions.success('Company registration successful'));
-                    console.log(company);
                     dispatch(userActions.selectCompany(company.id));
                 },
                 error => {
@@ -45,21 +45,25 @@ function register(company) {
     function failure(error) { return { type: companyConstants.REGISTER_FAILURE, error } }
 }
 
-
-// prefixed function name with underscore because delete is a reserved word in javascript
-function getById(id) {
+function update(companyId, company) {
 
     return dispatch => {
-        dispatch(request(id));
-/*
-        companyService.getById(id)
+        dispatch(request(company));
+
+        firebase.firestore().collection('companies').doc(companyId).update(company)
             .then(
-                company => dispatch(success(company)),
-                error => dispatch(failure(id, error.toString()))
-            );*/
+                company => { 
+                    dispatch(success(company));
+                    dispatch(alertActions.success('Company update successful'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
     };
 
-    function request(id) { return { type: companyConstants.GET_REQUEST } }
-    function success(company) { return { type: companyConstants.GET_SUCCESS, company } }
-    function failure(id, error) { return { type: companyConstants.GET_FAILURE, id, error } }
+    function request(company) { return { type: companyConstants.REGISTER_REQUEST, company } }
+    function success(company) { return { type: companyConstants.REGISTER_SUCCESS, company } }
+    function failure(error) { return { type: companyConstants.REGISTER_FAILURE, error } }
 }

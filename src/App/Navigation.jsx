@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useFirestoreConnect } from 'react-redux-firebase';
 
 import PropTypes from 'prop-types';
 import { AppBar, Drawer, Hidden, IconButton, Button, List, ListItem, ListItemIcon, Divider, Toolbar, Tooltip, Typography } from '@material-ui/core';
@@ -69,7 +70,6 @@ const useStyles = makeStyles((theme) => ({
         marginTop: '1px',
         marginLeft: '1px',
         marginBottom: theme.spacing(5)
-
     },
     icon: {
         color: 'Gainsboro'
@@ -83,13 +83,22 @@ const Navigation = (props) => {
     const { window } = props;
     const classes = useStyles();
     const theme = useTheme();
-    
+
     const [mobileOpen, setMobileOpen] = useState(false);
-    const profile = useSelector(state => state.firebase.profile);
-    const production = useSelector(state => state.productions.production);
+    const profile = useSelector(({ firebase: { profile } }) => profile)
+    const auth = useSelector(({ firebase: { auth } }) => auth);
+    useFirestoreConnect(() => [{ collection: 'productions', doc: (profile && profile.selectedProduction ? profile.selectedProduction : '*'), storeAs:'navProduction' }])
+
+    // , storeAs:'currentProductions'
+    //,doc: (profile && profile.selectedProduction ? profile.selectedProduction : '')
+    //where: [['companyId', '==', profile && profile.selectedCompany ? profile.selectedCompany : ''], ['users', 'array-contains', auth && auth.uid ? auth.uid : '']]
+    const production = useSelector(({ firestore: { data } }) => data.navProduction);
+
+    //const production = useSelector(state => state.productions.production);
     const container = window !== undefined ? () => window().document.body : undefined;
 
     useEffect(() => {
+
         document.title = production ? 'Scena - ' + production.title : 'Scena';
     });
 
@@ -102,28 +111,28 @@ const Navigation = (props) => {
                 </Button>
             </Tooltip>
             <List>
-                {profile && profile.selectedCompany && //profile.permissions.includes("canViewProduction") && production &&
+                {profile && profile.selectedCompany && profile.selectedProduction && //profile.permissions.includes("canViewProduction") && production &&
                     <Tooltip title="Production">
                         <ListItem button key='Production' component={Link} to="/production" selected={props.route == 'production'}>
                             <ListItemIcon><MovieIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {profile && profile.selectedCompany && //profile.permissions.includes("canViewScenes") && production &&
+                {profile && profile.selectedCompany && profile.selectedProduction && //profile.permissions.includes("canViewScenes") && production &&
                     <Tooltip title="Scenes">
                         <ListItem button key='Scenes' component={Link} to="/scenes" selected={props.route == 'scenes'}>
                             <ListItemIcon><PermMediaIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {profile && profile.selectedCompany && //profile.permissions.includes("canViewScripts") && production &&
+                {profile && profile.selectedCompany && profile.selectedProduction && //profile.permissions.includes("canViewScripts") && production &&
                     <Tooltip title="Scripts">
                         <ListItem button key='Scripts' component={Link} to="/scripts" selected={props.route == 'scripts'}>
                             <ListItemIcon><AssignmentIcon className={classes.icon} /></ListItemIcon>
                         </ListItem>
                     </Tooltip>
                 }
-                {profile && profile.selectedCompany && //profile.permissions.includes("canViewTeam") && production &&
+                {profile && profile.selectedCompany && profile.selectedProduction && //profile.permissions.includes("canViewTeam") && production &&
                     <Tooltip title="Team">
                         <ListItem button key='Team' component={Link} to="/team" selected={props.route == 'team'}>
                             <ListItemIcon><GroupIcon className={classes.icon} /></ListItemIcon>

@@ -14,7 +14,8 @@ export const userActions = {
     register,
     getAll,
     delete: _delete,
-    selectCompany
+    selectCompany,
+    selectProduction
 };
 
 function login(username, password, from) {
@@ -53,7 +54,7 @@ function register(user) {
         dispatch(request(user));
         console.log(user);
         firebase.createUser(
-            { email: user.email, password: user.password },
+            { email: user.email, password: user.password, displayName: user.preferredName },
             {
                 displayName: user.preferredName, username: user.email, email: user.email
             }
@@ -85,7 +86,7 @@ function selectCompany(companyId) {
             .then(
                 profile => {
                     dispatch(success(profile));
-                    dispatch(alertActions.success('Company added to profile successful'));
+                    dispatch(alertActions.success('Company selected'));
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -98,6 +99,31 @@ function selectCompany(companyId) {
     function success(profile) { return { type: userConstants.SELECTCOMPANY_SUCCESS, profile } }
     function failure(error) { return { type: userConstants.SELECTCOMPANY_FAILURE, error } }
 }
+
+function selectProduction(productionId) {
+
+    return dispatch => {
+        dispatch(request(productionId));
+
+        //const ref = firebase.firestore().collection('users').get(profileId);
+        firebase.updateProfile({ selectedProduction: productionId })
+            .then(
+                profile => {
+                    dispatch(success(profile));
+                    dispatch(alertActions.success('Production selected'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            )
+    };
+
+    function request(companyId) { return { type: userConstants.SELECTPRODUCTION_REQUEST, companyId } }
+    function success(profile) { return { type: userConstants.SELECTPRODUCTION_SUCCESS, profile } }
+    function failure(error) { return { type: userConstants.SELECTPRODUCTION_FAILURE, error } }
+}
+
 
 function getAll() {
     return dispatch => {
